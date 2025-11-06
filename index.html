@@ -1,300 +1,5 @@
 <!DOCTYPE html>
 <html lang="id">
-    <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyAsXHYYFx2mJ_Y121d9sSXEw9c7Fl7XkZg",
-    authDomain: "mamak-store.firebaseapp.com",
-    databaseURL: "https://mamak-store-default-rtdb.firebaseio.com",
-    projectId: "mamak-store",
-    storageBucket: "mamak-store.firebasestorage.app",
-    messagingSenderId: "356706808124",
-    appId: "1:356706808124:web:eabe39a4aacc1a74e5ee39",
-    measurementId: "G-ESGE7W88J8"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  // ======= variabel app (mirip dengan yang sekarang) =======
-  let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-  let library = JSON.parse(localStorage.getItem('library')) || [];
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  let user = null; // akan diisi saat login
-  let unsubscribeUserSnapshot = null;
-
-  // Utility: save local cache
-  function saveLocal() {
-    localStorage.setItem('wishlist', JSON.stringify(wishlist));
-    localStorage.setItem('library', JSON.stringify(library));
-    localStorage.setItem('cart', JSON.stringify(cart));
-  }
-
-  // ========== Firestore helpers ==========
-  function getUserDocRef(uid) {
-    return doc(db, 'users', uid);
-  }
-
-  // Ambil data user dari Firestore (jika ada) dan tulis ke local (merge)
-  async function fetchUserData(uid) {
-    try {
-      const userRef = getUserDocRef(uid);
-      const snap = await getDoc(userRef);
-      if (snap.exists()) {
-        const data = snap.data();
-        wishlist = data.wishlist || wishlist;
-        cart = data.cart || cart;
-        library = data.library || library;
-        saveLocal();
-      } else {
-        // buat doc awal
-        await setDoc(userRef, {
-          wishlist,
-          cart,
-          library,
-          updatedAt: serverTimestamp()
-        });
-      }
-    } catch (err) {
-      console.error('fetchUserData error', err);
-    }
-  }
-
-  // Simpan semua koleksi user ke Firestore (overwrite atau merge)
-  async function saveUserData(uid) {
-    try {
-      const userRef = getUserDocRef(uid);
-      await setDoc(userRef, {
-        wishlist,
-        cart,
-        library,
-        updatedAt: serverTimestamp()
-      }, { merge: true });
-    } catch (err) {
-      console.error('saveUserData error', err);
-    }
-  }
-
-  // Sync local -> firestore pada login (gabungkan isi)
-  async function syncLocalToFirestore(uid) {
-    try {
-      const userRef = getUserDocRef(uid);
-      const snap = await getDoc(userRef);
-      if (!snap.exists()) {
-        // langsung buat dari local
-        await setDoc(userRef, { wishlist, cart, library, updatedAt: serverTimestamp() });
-      } else {
-        const remote = snap.data();
-        // Merge sederhana: unique by id, prefer remote for library (already bought)
-        function mergeArrays(localArr = [], remoteArr = []) {
-          const map = new Map();
-          remoteArr.forEach(g => map.set(g.id, g));
-          localArr.forEach(g => { if (!map.has(g.id)) map.set(g.id, g); });
-          return Array.from(map.values());
-        }
-        const merged = {
-          wishlist: mergeArrays(wishlist, remote.wishlist || []),
-          cart: mergeArrays(cart, remote.cart || []),
-          library: mergeArrays(library, remote.library || [])
-        };
-        wishlist = merged.wishlist;
-        cart = merged.cart;
-        library = merged.library;
-        // simpan kembali
-        await setDoc(userRef, { ...merged, updatedAt: serverTimestamp() }, { merge: true });
-        saveLocal();
-      }
-    } catch (err) {
-      console.error('syncLocalToFirestore error', err);
-    }
-  }
-
-  // Real-time listener utk update apabila data di firestore berubah (opsional tapi berguna)
-  function startUserRealtime(uid) {
-    const userRef = getUserDocRef(uid);
-    if (unsubscribeUserSnapshot) unsubscribeUserSnapshot();
-    unsubscribeUserSnapshot = onSnapshot(userRef, (snap) => {
-      if (!snap.exists()) return;
-      const data = snap.data();
-      // update local structures & UI only if different
-      wishlist = data.wishlist || wishlist;
-      cart = data.cart || cart;
-      library = data.library || library;
-      saveLocal();
-      // update UI (panggil fungsi yang sudah ada)
-      updateWishlist();
-      updateCart();
-      updateLibrary();
-    }, (err) => {
-      console.error('onSnapshot error', err);
-    });
-  }
-
-  // ========== Auth state handling ==========
-  onAuthStateChanged(auth, async (u) => {
-    if (u) {
-      user = u;
-      // sinkronisasi local -> firestore dan mulai realtime
-      await syncLocalToFirestore(user.uid);
-      startUserRealtime(user.uid);
-      document.getElementById('login-btn').textContent = `Hi, ${user.email} (Logout)`;
-      document.getElementById('login-btn').onclick = async () => {
-        await signOut(auth);
-      };
-      showNotification('Login berhasil!', 'success');
-    } else {
-      user = null;
-      if (unsubscribeUserSnapshot) { unsubscribeUserSnapshot(); unsubscribeUserSnapshot = null; }
-      document.getElementById('login-btn').textContent = 'Login';
-      document.getElementById('login-btn').onclick = () => showPage('login');
-      showNotification('Anda keluar (logout).', 'info');
-    }
-  });
-
-  // ========== Replace fungsi addToWishlist / addToCart / buyGame / checkout ==========
-
-  async function addToWishlist(game) {
-    if (!wishlist.find(g => g.id === game.id)) {
-      wishlist.push(game);
-      saveLocal();
-      showNotification(`${game.name} ditambahkan ke wishlist!`, 'success');
-      if (user) await saveUserData(user.uid);
-      updateWishlist();
-    } else {
-      showNotification('Sudah ada di wishlist.', 'info');
-    }
-  }
-
-  async function addToCart(game) {
-    if (!cart.find(g => g.id === game.id)) {
-      cart.push(game);
-      saveLocal();
-      showNotification(`${game.name} ditambahkan ke cart!`, 'success');
-      if (user) await saveUserData(user.uid);
-      updateCart();
-    } else {
-      showNotification('Sudah ada di cart.', 'info');
-    }
-  }
-
-  async function buyGame(game) {
-    if (!library.find(g => g.id === game.id)) {
-      library.push(game);
-      // jika ada di cart, hapus dari cart
-      cart = cart.filter(g => g.id !== game.id);
-      saveLocal();
-      showNotification(`${game.name} dibeli dan ditambahkan ke library!`, 'success');
-      if (user) await saveUserData(user.uid);
-      updateLibrary();
-      updateCart();
-    } else {
-      showNotification('Sudah ada di library.', 'info');
-    }
-  }
-
-  async function checkout() {
-    if (cart.length === 0) {
-      showNotification('Cart kosong!', 'info');
-      return;
-    }
-    // add all cart items ke library, hapus dari cart
-    const newAdded = cart.filter(g => !library.find(l => l.id === g.id));
-    library = [...library, ...newAdded];
-    cart = [];
-    saveLocal();
-    showNotification('Checkout berhasil! Game ditambahkan ke Library.', 'success');
-    if (user) await saveUserData(user.uid);
-    updateLibrary();
-    updateCart();
-  }
-
-  // ========== Login form handling (gantikan handleLogin mu) ==========
-  // Misal untuk demo: login dengan email & password
-  window.handleLogin = async function (event) {
-    event.preventDefault();
-    const email = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    try {
-      // jika ingin membuat akun baru: createUserWithEmailAndPassword(auth, email, password)
-      await signInWithEmailAndPassword(auth, email, password);
-      // onAuthStateChanged akan menjalankan sync & UI update
-      showPage('home');
-    } catch (err) {
-      console.error(err);
-      showNotification('Login gagal. Periksa email/password.', 'error');
-    }
-  };
-
-  // Untuk logout cukup memanggil signOut(auth) — onAuthStateChanged menangani UI
-
-  // ========== update UI functions (gunakan fungsi yang sudah ada di file asli) ==========
-  // Pastikan updateWishlist(), updateCart(), updateLibrary() ada di scope global
-  // Jika fungsi tersebut dideklarasikan elsewhere, tetap panggil mereka di sini
-  window.updateWishlist = function() {
-    const list = document.getElementById('wishlist-list');
-    list.innerHTML = '';
-    if (!wishlist.length) { list.innerHTML = '<p>Belum ada game di wishlist.</p>'; return; }
-    wishlist.forEach(game => {
-      const li = document.createElement('li');
-      li.innerHTML = `${game.name} - Rp ${game.price || 'Gratis'} <button onclick="addToCartById(${game.id})">Add to Cart</button>`;
-      list.appendChild(li);
-    });
-  }
-
-  window.addToCartById = function(id) {
-    const game = games.find(g => g.id === id);
-    if (game) addToCart(game);
-  }
-
-  window.updateCart = function() {
-    const list = document.getElementById('cart-list');
-    list.innerHTML = '';
-    if (!cart.length) { list.innerHTML = '<p>Keranjang kosong.</p>'; document.getElementById('cart-total').textContent = 0; return; }
-    let total = 0;
-    cart.forEach(game => {
-      const li = document.createElement('li');
-      li.innerHTML = `${game.name} - Rp ${game.price || 'Gratis'} <button onclick="removeFromCart(${game.id})">Remove</button>`;
-      list.appendChild(li);
-      total += game.price || 0;
-    });
-    document.getElementById('cart-total').textContent = total;
-  }
-
-  window.removeFromCart = function(id) {
-    cart = cart.filter(g => g.id !== id);
-    saveLocal();
-    if (user) saveUserData(user.uid);
-    updateCart();
-  }
-
-  window.updateLibrary = function() {
-    const list = document.getElementById('library-list');
-    list.innerHTML = '';
-    if (!library.length) { list.innerHTML = '<p>Belum ada game di library.</p>'; return; }
-    library.forEach(game => {
-      const li = document.createElement('li');
-      li.textContent = `${game.name} - Dimiliki`;
-      list.appendChild(li);
-    });
-  }
-
-  // Panggil update awal untuk isi UI dari localStorage
-  updateWishlist();
-  updateCart();
-  updateLibrary();
-
-  // Expose functions kalau dipanggil dari HTML inline
-  window.addToWishlist = addToWishlist;
-  window.addToCart = addToCart;
-  window.buyGame = buyGame;
-  window.checkout = checkout;
-
-</script>
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -435,10 +140,9 @@
         <div id="login" class="page login-form" style="display: none;">
             <h2>Login</h2>
             <form onsubmit="handleLogin(event)">
-                <input type="email" id="login-email" placeholder="Email" required>
-                <input type="password" id="login-password" placeholder="Password" required>
-                <button onclick="loginFirebase()">Login</button>
-                <p>Belum punya akun? <a href="#" onclick="registerFirebase()">Daftar di sini</a></p>
+                <input type="text" id="username" placeholder="Username" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit">Login</button>
             </form>
             <p style="text-align: center; margin-top: 10px;">Demo: Username "admin", Password "123"</p>
         </div>
@@ -487,7 +191,7 @@
     <div id="notification" class="notification"></div>
 
     <footer>
-        <p>&copy; 2023 Mamak Store. All rights reserved.</p>
+        <p>&copy; 2025 Mamak Store. All rights reserved.</p>
         <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a> | <a href="#">Contact Us</a>
     </footer>
 
@@ -564,36 +268,22 @@
         }
 
         // Fungsi handle login
-        async function loginFirebase() {
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-
-    try {
-        const userCredential = await firebaseUtils.signInWithEmailAndPassword(firebaseAuth, email, password);
-        const user = userCredential.user;
-        localStorage.setItem('user', user.email);
-        showNotification(`Selamat datang, ${user.email}`, 'success');
-        closeLoginModal();
-        location.reload();
-    } catch (error) {
-        showNotification('Email atau password salah.', 'error');
-    }
-}
-
-async function registerFirebase() {
-    const email = prompt("Masukkan email baru:");
-    const password = prompt("Masukkan password (minimal 6 karakter):");
-
-    if (!email || !password) return showNotification("Email dan password harus diisi!", "error");
-
-    try {
-        await firebaseUtils.createUserWithEmailAndPassword(firebaseAuth, email, password);
-        showNotification("Akun berhasil dibuat! Silakan login.", "success");
-    } catch (error) {
-        showNotification("Gagal membuat akun: " + error.message, "error");
-    }
-}
-
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            // Simulasi autentikasi dummy
+            if (username === 'admin' && password === '123') {
+                user = username;
+                localStorage.setItem('user', user);
+                document.getElementById('login-btn').textContent = `Hi, ${user} (Logout)`;
+                document.getElementById('login-btn').onclick = logout;
+                showPage('home');
+                showNotification('Login berhasil!', 'success');
+            } else {
+                showNotification('Username atau password salah!', 'error');
+            }
+        }
 
         // Fungsi logout
         function logout() {

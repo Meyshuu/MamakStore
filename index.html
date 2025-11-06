@@ -1,5 +1,34 @@
 <!DOCTYPE html>
 <html lang="id">
+            <!-- Firebase v9 (modular) -->
+<script type="module">
+  import { initializeApp } from "firebase/app";
+  import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+  import { getAnalytics } from "firebase/analytics";
+
+  // Masukkan firebaseConfig yang kamu dapat dari Firebase Console
+    const firebaseConfig = {
+  apiKey: "AIzaSyAsXHYYFx2mJ_Y121d9sSXEw9c7Fl7XkZg",
+  authDomain: "mamak-store.firebaseapp.com",
+  databaseURL: "https://mamak-store-default-rtdb.firebaseio.com",
+  projectId: "mamak-store",
+  storageBucket: "mamak-store.firebasestorage.app",
+  messagingSenderId: "356706808124",
+  appId: "1:356706808124:web:eabe39a4aacc1a74e5ee39",
+  measurementId: "G-ESGE7W88J8"
+};
+  // Inisialisasi
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
+  // Expose ke window supaya kode lama bisa memanggil fungsi
+  window.firebaseApp = app;
+  window.firebaseAuth = auth;
+  window.firebaseDb = db;
+  window.firebaseUtils = { signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, doc, setDoc, getDoc, updateDoc, onSnapshot, onAuthStateChanged };
+</script>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -104,29 +133,29 @@
                 <input type="text" id="search" placeholder="Cari game..." onkeyup="filterGames()">
                 <select id="filter-genre" onchange="filterGames()">
                     <option value="">Semua Genre</option>
-<option value="battle-royale">Battle Royale</option>
-<option value="rpg">RPG</option>
-<option value="sports">Sports</option>
-<option value="action">Action</option>
-<option value="moba">MOBA</option>
-<option value="shooter">Shooter</option>
-<option value="puzzle">Puzzle</option>
-<option value="adventure">Adventure</option>
-<option value="horror">Horror</option>
-<option value="fighting">Fighting</option>
-<option value="simulation">Simulation</option>
-<option value="strategy">Strategy</option>
-<option value="tactical">Tactical</option>
-<option value="hero-shooter">Hero Shooter</option>
-<option value="fantasy">Fantasy</option>
-<option value="story-rich">Story Rich</option>
-<option value="open-world">Open World</option>
-<option value="survival">Survival</option>
-<option value="casual">Casual</option>
-<option value="sci-fi">Sci-Fi</option>
-<option value="superhero">Superhero</option>
-<option value="farming">Farming</option>
-<option value="mythology">Mythology</option>
+                    <option value="battle-royale">Battle Royale</option>
+                    <option value="rpg">RPG</option>
+                    <option value="sports">Sports</option>
+                    <option value="action">Action</option>
+                    <option value="moba">MOBA</option>
+                    <option value="shooter">Shooter</option>
+                    <option value="puzzle">Puzzle</option>
+                    <option value="adventure">Adventure</option>
+                    <option value="horror">Horror</option>
+                    <option value="fighting">Fighting</option>
+                    <option value="simulation">Simulation</option>
+                    <option value="strategy">Strategy</option>
+                    <option value="tactical">Tactical</option>
+                    <option value="hero-shooter">Hero Shooter</option>
+                    <option value="fantasy">Fantasy</option>
+                    <option value="story-rich">Story Rich</option>
+                    <option value="open-world">Open World</option>
+                    <option value="survival">Survival</option>
+                    <option value="casual">Casual</option>
+                    <option value="sci-fi">Sci-Fi</option>
+                    <option value="superhero">Superhero</option>
+                    <option value="farming">Farming</option>
+                    <option value="mythology">Mythology</option>
                 </select>
                 <select id="filter-price" onchange="filterGames()">
                     <option value="">Semua Harga</option>
@@ -551,6 +580,7 @@
     </script>
 </body>
 </html>
+
 
 
 

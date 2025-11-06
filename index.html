@@ -302,7 +302,7 @@
             const price = document.getElementById('filter-price').value;
             filteredGames = games.filter(game => {
                 return game.name.toLowerCase().includes(search) &&
-                       (genre === '' || game.genre === genre) &&
+                       (genre === '' || game.genre.includes(genre)) &&
                        (price === '' || (price === 'free' && game.price === 0) || (price === 'paid' && game.price > 0));
             });
             currentPage = 1;
@@ -387,7 +387,7 @@
             document.getElementById('modal-title').textContent = currentGame.name;
             document.getElementById('modal-img').src = currentGame.img;
             document.getElementById('modal-desc').textContent = currentGame.desc;
-            document.getElementById('modal-genre').textContent = currentGame.genre;
+            document.getElementById('modal-genre').textContent = currentGame.genre.join(', ');
             document.getElementById('modal-price').textContent = currentGame.price || 'Gratis';
             document.getElementById('modal').style.display = 'flex';
         }
@@ -551,7 +551,6 @@
     </script>
 </body>
 </html>
-
 
 
 

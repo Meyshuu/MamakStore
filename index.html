@@ -563,6 +563,48 @@
             else if (page === 'cart') updateCart();
         }
 
+        // Fungsi handle login
+        async function loginFirebase() {
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+
+    try {
+        const userCredential = await firebaseUtils.signInWithEmailAndPassword(firebaseAuth, email, password);
+        const user = userCredential.user;
+        localStorage.setItem('user', user.email);
+        showNotification(`Selamat datang, ${user.email}`, 'success');
+        closeLoginModal();
+        location.reload();
+    } catch (error) {
+        showNotification('Email atau password salah.', 'error');
+    }
+}
+
+async function registerFirebase() {
+    const email = prompt("Masukkan email baru:");
+    const password = prompt("Masukkan password (minimal 6 karakter):");
+
+    if (!email || !password) return showNotification("Email dan password harus diisi!", "error");
+
+    try {
+        await firebaseUtils.createUserWithEmailAndPassword(firebaseAuth, email, password);
+        showNotification("Akun berhasil dibuat! Silakan login.", "success");
+    } catch (error) {
+        showNotification("Gagal membuat akun: " + error.message, "error");
+    }
+}
+
+
+        // Fungsi logout
+        function logout() {
+            user = null;
+            localStorage.removeItem('user');
+            document.getElementById('login-btn').textContent = 'Login';
+            document.getElementById('login-btn').onclick = () => showPage('login');
+            showPage('home');
+            showNotification('Logout berhasil!', 'success');
+        }
+
         // Fungsi filter & search
         function filterGames() {
             const search = document.getElementById('search').value.toLowerCase();

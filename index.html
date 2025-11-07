@@ -813,15 +813,13 @@
             .then(data => {
                 if (data.success) {
                     currentGame.reviews = data.reviews;
-                    // Update the reviews list
-                    const reviewsListDiv = document.getElementById('reviews-list');
-                    reviewsListDiv.innerHTML = '';
+                    // Add date to new review if missing
                     currentGame.reviews.forEach(review => {
-                        const reviewDiv = document.createElement('div');
-                        reviewDiv.className = 'modal-review';
-                        reviewDiv.innerHTML = `<p><strong>${review.user}</strong> (${review.rating}/5): ${review.comment}</p>`;
-                        reviewsListDiv.appendChild(reviewDiv);
+                        if (!review.date) review.date = new Date().toISOString();
                     });
+                    // Reset batch and sort
+                    currentReviewsShown = reviewsPerBatch;
+                    sortReviews();
                     // Clear form
                     document.getElementById('review-user').value = '';
                     document.getElementById('review-rating').value = '';

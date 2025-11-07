@@ -4,10 +4,20 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const fs = require('fs');
 
 const app = express();
 const PORT = 8000;
 const JWT_SECRET = 'rskcLhzk8DgcuRKxwIEwMgFBerJpLd9wmtyIGpAKBvG'; // In production, use environment variable
+
+// Read the HTML file at startup for Vercel compatibility
+let htmlContent;
+try {
+    htmlContent = fs.readFileSync('./Webstore-game.html', 'utf8');
+} catch (err) {
+    console.error('Error reading HTML file:', err);
+    htmlContent = '<h1>File not found</h1>';
+}
 
 // Middleware
 app.use(cors());
@@ -16,11 +26,11 @@ app.use(express.static('.'));
 
 // Serve the HTML file
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/Webstore-game.html');
+    res.send(htmlContent);
 });
 
 app.get('/Webstore-game.html', (req, res) => {
-    res.sendFile(__dirname + '/Webstore-game.html');
+    res.send(htmlContent);
 });
 
 // In-memory data storage (replace with database later)

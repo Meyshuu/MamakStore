@@ -32,4 +32,4 @@ jobs:
       - run: npm publish
       - run: node server.js
         env:
-          NODE_AUTH_TOKEN: ${{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}}
+          NODE_AUTH_TOKEN: ${{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}}

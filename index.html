@@ -218,7 +218,6 @@
                 <button type="submit">Login</button>
             </form>
             <p style="text-align: center; margin-top: 10px;">Demo: Username "admin", Password "123"</p>
-            <p style="text-align: center;"><a href="#" onclick="showPage('register')">Belum punya akun? Daftar di sini</a></p>
         </div>
         <div id="register" class="page login-form" style="display: none;">
             <h2>Register</h2>
@@ -1128,19 +1127,10 @@
                 document.getElementById('login-btn').textContent = `Hi, ${user} (Logout)`;
                 document.getElementById('login-btn').onclick = logout;
             }
-            // Fetch games from server
-            fetch('/api/games')
-                .then(response => response.json())
-                .then(data => {
-                    games = data;
-                    filteredGames = games;
-                    populateFilters();
-                    displayGames();
-                })
-                .catch(error => {
-                    console.error('Error fetching games:', error);
-                    showNotification('Failed to load games.', 'error');
-                });
+            // Use embedded games
+            filteredGames = games;
+            populateFilters();
+            displayGames();
             // Initialize Swiper
             const swiper = new Swiper('.banner', {
                 loop: true,

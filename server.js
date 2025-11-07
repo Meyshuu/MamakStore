@@ -235,6 +235,7 @@ app.post('/api/library', (req, res) => {
         // Remove from cart if present
         userData[userId].cart = userData[userId].cart.filter(item => item.gameId !== gameId);
     }
+    saveUserData();
     res.json({ success: true, library: userData[userId].library });
 });
 

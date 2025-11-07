@@ -15,6 +15,10 @@ app.use(bodyParser.json());
 app.use(express.static('.'));
 
 // Serve the HTML file
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/Webstore-game.html');
+});
+
 app.get('/Webstore-game.html', (req, res) => {
     res.sendFile(__dirname + '/Webstore-game.html');
 });

@@ -19,6 +19,34 @@ try {
     htmlContent = '<h1>File not found</h1>';
 }
 
+// Load reviews from file
+let reviews = [];
+try {
+    reviews = JSON.parse(fs.readFileSync('./reviews.json', 'utf8'));
+} catch (err) {
+    console.error('Error loading reviews:', err);
+    reviews = [];
+}
+
+// Load userData from file
+let userData = {};
+try {
+    userData = JSON.parse(fs.readFileSync('./userData.json', 'utf8'));
+} catch (err) {
+    console.error('Error loading userData:', err);
+    userData = {};
+}
+
+// Function to save reviews to file
+function saveReviews() {
+    fs.writeFileSync('./reviews.json', JSON.stringify(reviews, null, 2));
+}
+
+// Function to save userData to file
+function saveUserData() {
+    fs.writeFileSync('./userData.json', JSON.stringify(userData, null, 2));
+}
+
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
@@ -71,7 +99,7 @@ let games = [
     { id: 30, name: "God of War: Ragnarok", img: "gowr.png", desc: "Aksi epik Kratos dan Atreus melawan para dewa Nordik.", genre: ["action", "adventure", "mythology"], price: 0, releaseDate: "2022-11-09", developer: "Santa Monica Studio", platform: "PC, PS4, PS5", rating: 4.9, sysReq: { min: "Minimum: Windows 10, 8GB RAM, GTX 1070", rec: "Recommended: Windows 10, 16GB RAM, RTX 2060" }, screenshots: ["gowr-ss1.png", "gowr-ss2.png"], reviews: [] }
 ];
 
-let userData = {}; // { userId: { wishlist: [], library: [], cart: [{ gameId, quantity }] } }
+
 
 // Helper function to generate simple token
 function generateToken() {
@@ -170,6 +198,7 @@ app.post('/api/wishlist', (req, res) => {
     } else if (action === 'remove') {
         userData[userId].wishlist = userData[userId].wishlist.filter(id => id !== gameId);
     }
+    saveUserData();
     res.json({ success: true, wishlist: userData[userId].wishlist });
 });
 
@@ -265,7 +294,12 @@ app.post('/api/reviews', (req, res) => {
     const { gameId, user, rating, comment } = req.body;
     const game = games.find(g => g.id === parseInt(gameId));
     if (game) {
-        game.reviews.push({ user, rating: parseFloat(rating), comment });
+        const userObj = users.find(u => u.username === user);
+        const avatar = userObj ? userObj.avatar : 'default-avatar.png';
+        const newReview = { gameId: parseInt(gameId), user, rating: parseFloat(rating), comment, date: new Date().toISOString(), avatar };
+        game.reviews.push(newReview);
+        reviews.push(newReview);
+        saveReviews();
         res.json({ success: true, reviews: game.reviews });
     } else {
         res.status(404).json({ success: false, message: 'Game not found' });

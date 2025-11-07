@@ -45,8 +45,22 @@
         .modal-screenshots { display: flex; gap: 10px; margin: 10px 0; flex-wrap: wrap; }
         .modal-screenshots img { width: 100px; height: 60px; object-fit: cover; border-radius: 5px; }
         .modal-reviews { margin-top: 20px; }
-        .modal-review { background: rgba(0,0,0,0.1); padding: 10px; margin: 5px 0; border-radius: 5px; }
-        .modal-review p { margin: 0; }
+        .modal-review { background: rgba(0,0,0,0.1); padding: 15px; margin: 10px 0; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: flex-start; gap: 10px; backdrop-filter: blur(5px); box-shadow: 0 2px 10px rgba(0,0,0,0.2); transition: transform 0.2s; }
+        .modal-review:hover { transform: translateY(-2px); }
+        .modal-review .review-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; }
+        .modal-review .review-content { flex: 1; }
+        .modal-review .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .modal-review .review-user { font-weight: bold; color: #fff; }
+        .modal-review .review-date { font-size: 12px; color: #ccc; }
+        .modal-review .review-rating { color: gold; font-size: 14px; display: flex; align-items: center; gap: 2px; }
+        .modal-review .review-stars { display: flex; gap: 1px; }
+        .modal-review .review-stars .star { color: gold; font-size: 12px; }
+        .modal-review .review-comment { margin: 5px 0 0 0; color: #ddd; }
+        .star-rating { display: flex; gap: 2px; }
+        .star-rating .star { font-size: 20px; color: #ccc; cursor: pointer; transition: color 0.2s; }
+        .star-rating .star:hover, .star-rating .star.active { color: gold; }
+        .load-more-btn { background: linear-gradient(45deg, #333, #555); color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; margin: 10px 0; transition: all 0.3s; }
+        .load-more-btn:hover { background: linear-gradient(45deg, #555, #777); transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
         @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
         .banner { height: 250px; margin-top: 20px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); overflow: hidden; z-index: 0; }
         .swiper-slide { background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.7); height: 250px; }
@@ -116,6 +130,7 @@
             </div>
         </div>
         <div style="display: flex; align-items: center;">
+            <button class="theme-toggle" onclick="toggleTheme()" style="background: none; border: none; color: white; font-size: 20px; margin-right: 10px; cursor: pointer;"><i class="fas fa-moon"></i></button>
             <button onclick="showPage('cart')" style="background: none; border: none; color: white; font-size: 20px; margin-right: 10px; cursor: pointer;">🛒</button>
             <button id="login-btn" onclick="showPage('login')">Login</button>
         </div>
@@ -1170,6 +1185,5 @@
     </script>
 </body>
 </html>
-
 
 

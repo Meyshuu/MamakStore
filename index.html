@@ -1174,13 +1174,37 @@
 
         // Fungsi menambah ke wishlist
         function addToWishlist(game) {
-            if (!wishlist.find(g => g.id === game.id)) {
-                wishlist.push(game);
-                localStorage.setItem('wishlist', JSON.stringify(wishlist));
-                updateWishlist();
-                showNotification(`${game.name} ditambahkan ke wishlist!`, 'success');
+            const userId = localStorage.getItem('userId');
+            if (userId) {
+                fetch('/api/wishlist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: parseInt(userId), gameId: game.id, action: 'add' })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        wishlist = data.wishlist.map(id => games.find(g => g.id === id)).filter(g => g);
+                        localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                        updateWishlist();
+                        showNotification(`${game.name} ditambahkan ke wishlist!`, 'success');
+                    } else {
+                        showNotification('Failed to add to wishlist.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error adding to wishlist.', 'error');
+                });
             } else {
-                showNotification('Sudah ada di wishlist.', 'error');
+                if (!wishlist.find(g => g.id === game.id)) {
+                    wishlist.push(game);
+                    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                    updateWishlist();
+                    showNotification(`${game.name} ditambahkan ke wishlist!`, 'success');
+                } else {
+                    showNotification('Sudah ada di wishlist.', 'error');
+                }
             }
         }
 

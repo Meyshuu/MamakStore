@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const PORT = 8000;
@@ -13,7 +14,7 @@ const JWT_SECRET = 'rskcLhzk8DgcuRKxwIEwMgFBerJpLd9wmtyIGpAKBvG'; // In producti
 // Read the HTML file at startup for Vercel compatibility
 let htmlContent;
 try {
-    htmlContent = fs.readFileSync('./Webstore-game.html', 'utf8');
+    htmlContent = fs.readFileSync(path.join(__dirname, 'Webstore-game.html'), 'utf8');
 } catch (err) {
     console.error('Error reading HTML file:', err);
     htmlContent = '<h1>File not found</h1>';

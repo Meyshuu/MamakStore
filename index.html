@@ -45,22 +45,6 @@
         .modal-screenshots { display: flex; gap: 10px; margin: 10px 0; flex-wrap: wrap; }
         .modal-screenshots img { width: 100px; height: 60px; object-fit: cover; border-radius: 5px; }
         .modal-reviews { margin-top: 20px; }
-        .modal-review { background: rgba(0,0,0,0.1); padding: 15px; margin: 10px 0; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: flex-start; gap: 10px; backdrop-filter: blur(5px); box-shadow: 0 2px 10px rgba(0,0,0,0.2); transition: transform 0.2s; }
-        .modal-review:hover { transform: translateY(-2px); }
-        .modal-review .review-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; }
-        .modal-review .review-content { flex: 1; }
-        .modal-review .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-        .modal-review .review-user { font-weight: bold; color: #fff; }
-        .modal-review .review-date { font-size: 12px; color: #ccc; }
-        .modal-review .review-rating { color: gold; font-size: 14px; display: flex; align-items: center; gap: 2px; }
-        .modal-review .review-stars { display: flex; gap: 1px; }
-        .modal-review .review-stars .star { color: gold; font-size: 12px; }
-        .modal-review .review-comment { margin: 5px 0 0 0; color: #ddd; }
-        .star-rating { display: flex; gap: 2px; }
-        .star-rating .star { font-size: 20px; color: #ccc; cursor: pointer; transition: color 0.2s; }
-        .star-rating .star:hover, .star-rating .star.active { color: gold; }
-        .load-more-btn { background: linear-gradient(45deg, #333, #555); color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; margin: 10px 0; transition: all 0.3s; }
-        .load-more-btn:hover { background: linear-gradient(45deg, #555, #777); transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
         @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
         .banner { height: 250px; margin-top: 20px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); overflow: hidden; z-index: 0; }
         .swiper-slide { background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.7); height: 250px; }
@@ -114,6 +98,250 @@
         .notification.success { background: rgba(0, 128, 0, 0.8); }
         .notification.error { background: rgba(255, 0, 0, 0.8); }
         .notification.info { background: rgba(0, 123, 255, 0.8); }
+
+        /* Contact Section Enhancements */
+        .contact-container {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        .contact-form-card, .contact-info-card {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .contact-form-card:hover, .contact-info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+        .contact-form-card h3, .contact-info-card h3 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-align: center;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ccc;
+            font-size: 18px;
+            transition: color 0.3s ease;
+        }
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 15px 15px 15px 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+        }
+        .input-group input:focus + i, .input-group textarea:focus + i {
+            color: #ff6b6b;
+        }
+        .contact-submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+        .contact-submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5);
+        }
+        .contact-info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .contact-info-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        .contact-info-item i {
+            font-size: 24px;
+            color: #ff6b6b;
+            margin-right: 15px;
+            min-width: 30px;
+        }
+        .contact-info-item div {
+            color: #fff;
+        }
+        .contact-info-item strong {
+            display: block;
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 5px;
+        }
+        .contact-info-item a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .contact-info-item a:hover {
+            color: #ff6b6b;
+        }
+        .faq-section {
+            margin-top: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .faq-section h3 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .faq-item {
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .faq-item:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .faq-question {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 20px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 16px;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+        .faq-question:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .faq-question i {
+            transition: transform 0.3s ease;
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .faq-answer p {
+            margin: 0;
+            padding: 20px;
+            color: #ccc;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 200px;
+        }
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+        .social-links {
+            margin-top: 50px;
+            text-align: center;
+        }
+        .social-links h3 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .social-icon {
+            display: inline-block;
+            width: 60px;
+            height: 60px;
+            line-height: 60px;
+            text-align: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        .social-icon:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .facebook:hover { background: linear-gradient(45deg, #1877f2, #42a5f5); border-color: #1877f2; }
+        .twitter:hover { background: linear-gradient(45deg, #1da1f2, #42a5f5); border-color: #1da1f2; }
+        .instagram:hover { background: linear-gradient(45deg, #e1306c, #f56040); border-color: #e1306c; }
+        .youtube:hover { background: linear-gradient(45deg, #ff0000, #ff4444); border-color: #ff0000; }
+        .discord:hover { background: linear-gradient(45deg, #5865f2, #7289da); border-color: #5865f2; }
+        .twitch:hover { background: linear-gradient(45deg, #9146ff, #b794f6); border-color: #9146ff; }
+
+        @media (max-width: 768px) {
+            .contact-container {
+                flex-direction: column;
+            }
+            .contact-form-card, .contact-info-card {
+                padding: 20px;
+            }
+            .social-icons {
+                gap: 15px;
+            }
+            .social-icon {
+                width: 50px;
+                height: 50px;
+                line-height: 50px;
+                font-size: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -130,7 +358,6 @@
             </div>
         </div>
         <div style="display: flex; align-items: center;">
-            <button class="theme-toggle" onclick="toggleTheme()" style="background: none; border: none; color: white; font-size: 20px; margin-right: 10px; cursor: pointer;"><i class="fas fa-moon"></i></button>
             <button onclick="showPage('cart')" style="background: none; border: none; color: white; font-size: 20px; margin-right: 10px; cursor: pointer;">🛒</button>
             <button id="login-btn" onclick="showPage('login')">Login</button>
         </div>
@@ -318,15 +545,108 @@
         <div id="contact" class="page" style="display: none;">
             <h2>Contact Us</h2>
             <p>If you have any questions or need support, feel free to reach out to us!</p>
-            <form onsubmit="handleContact(event)">
-                <input type="text" id="contact-name" placeholder="Your Name" required>
-                <input type="email" id="contact-email" placeholder="Your Email" required>
-                <textarea id="contact-message" placeholder="Your Message" rows="5" required></textarea>
-                <button type="submit">Send Message</button>
-            </form>
-            <p style="margin-top: 20px;">Or contact us directly:</p>
-            <p>Email: support@mamakstore.com</p>
-            <p>Phone: +62 123 456 789</p>
+            <div class="contact-container">
+                <div class="contact-form-card">
+                    <h3>Send us a Message</h3>
+                    <form onsubmit="handleContact(event)">
+                        <div class="input-group">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="contact-name" placeholder="Your Name" required>
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="contact-email" placeholder="Your Email" required>
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-comment"></i>
+                            <textarea id="contact-message" placeholder="Your Message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="contact-submit-btn">Send Message</button>
+                    </form>
+                </div>
+                <div class="contact-info-card">
+                    <h3>Contact Information</h3>
+                    <div class="contact-info-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <strong>Email:</strong><br>
+                            <a href="mailto:support@mamakstore.com">support@mamakstore.com</a>
+                        </div>
+                    </div>
+                    <div class="contact-info-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <strong>Phone:</strong><br>
+                            <a href="tel:+62123456789">+62 123 456 789</a>
+                        </div>
+                    </div>
+                    <div class="contact-info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <strong>Address:</strong><br>
+                            Jl. Teknologi No. 123, Jakarta, Indonesia
+                        </div>
+                    </div>
+                    <div class="contact-info-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <strong>Business Hours:</strong><br>
+                            Mon-Fri: 9AM-6PM<br>
+                            Sat-Sun: 10AM-4PM
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="faq-section">
+                <h3>Frequently Asked Questions</h3>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How do I purchase a game?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>You can purchase games by adding them to your cart and proceeding to checkout. We accept various payment methods for your convenience.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Can I download games after purchase?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes, after purchase, games will be available in your Library section. You can access and download them from there.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How do I add a review?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Click on "View Details" for any game, scroll down to the reviews section, and use the "Add Your Review" form to submit your feedback.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span>What if I have technical issues?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Contact our support team via email or phone. We'll be happy to help you resolve any technical issues you encounter.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="social-links">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#" class="social-icon facebook" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon twitter" title="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-icon instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-icon youtube" title="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="social-icon discord" title="Discord"><i class="fab fa-discord"></i></a>
+                    <a href="#" class="social-icon twitch" title="Twitch"><i class="fab fa-twitch"></i></a>
+                </div>
+            </div>
         </div>
         <div id="profile" class="page" style="display: none;">
             <h2>Profile</h2>
@@ -515,6 +835,8 @@
         let filteredGames = games;
         let user = localStorage.getItem('user') || null;
         let currentPageId = 'home';
+        let currentReviewsShown = 5;
+        const reviewsPerBatch = 5;
 
         // Populate filter selects
         function populateFilters() {
@@ -1147,6 +1469,12 @@
             .catch(error => {
                 console.error('Error:', error);
             });
+        }
+
+        // Fungsi toggle FAQ
+        function toggleFAQ(button) {
+            const item = button.parentElement;
+            item.classList.toggle('active');
         }
 
         // Jalankan saat halaman dimuat

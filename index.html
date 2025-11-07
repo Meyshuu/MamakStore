@@ -538,58 +538,34 @@
         }
 
         // Fungsi handle login
-        function handleLogin(event) {
+        async function handleLogin(event) {
             event.preventDefault();
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            fetch('/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    user = data.user.username;
-                    localStorage.setItem('user', user);
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('userId', data.user.id);
-                    // Load user-specific data from server
-                    fetch('/api/user-data/' + data.user.id)
-                    .then(response => response.json())
-                    .then(userData => {
-                        if (userData.success) {
-                            library = userData.data.library.map(gameId => games.find(g => g.id === gameId)).filter(g => g);
-                            wishlist = userData.data.wishlist.map(gameId => games.find(g => g.id === gameId)).filter(g => g);
-                            cart = userData.data.cart.map(item => ({ ...games.find(g => g.id === item.gameId), quantity: item.quantity })).filter(g => g);
-                            // Update localStorage for consistency
-                            localStorage.setItem('library', JSON.stringify(library));
-                            localStorage.setItem('wishlist', JSON.stringify(wishlist));
-                            localStorage.setItem('cart', JSON.stringify(cart));
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error loading user data:', error);
-                        // If error, start with empty data
-                        library = [];
-                        wishlist = [];
-                        cart = [];
-                        localStorage.setItem('library', JSON.stringify(library));
-                        localStorage.setItem('wishlist', JSON.stringify(wishlist));
-                        localStorage.setItem('cart', JSON.stringify(cart));
-                    });
-                    document.getElementById('login-btn').textContent = `Hi, ${user} (Logout)`;
-                    document.getElementById('login-btn').onclick = logout;
-                    showPage('home');
-                    showNotification('Login berhasil!', 'success');
-                } else {
-                    showNotification(data.message || 'Username atau password salah!', 'error');
+            try {
+                const data = await apiLogin(username, password);
+                user = data.user.username;
+                localStorage.setItem('user', user);
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('userId', data.user.id);
+                // Load user-specific data
+                const userData = apiGetUserData(data.user.id);
+                if (userData.success) {
+                    library = userData.data.library.map(gameId => games.find(g => g.id === gameId)).filter(g => g);
+                    wishlist = userData.data.wishlist.map(gameId => games.find(g => g.id === gameId)).filter(g => g);
+                    cart = userData.data.cart.map(item => ({ ...games.find(g => g.id === item.gameId), quantity: item.quantity })).filter(g => g);
+                    // Update localStorage for consistency
+                    localStorage.setItem('library', JSON.stringify(library));
+                    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                    localStorage.setItem('cart', JSON.stringify(cart));
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showNotification('Terjadi kesalahan saat login.', 'error');
-            });
+                document.getElementById('login-btn').textContent = `Hi, ${user} (Logout)`;
+                document.getElementById('login-btn').onclick = logout;
+                showPage('home');
+                showNotification('Login berhasil!', 'success');
+            } catch (error) {
+                showNotification(error.message || 'Username atau password salah!', 'error');
+            }
         }
 
         // Fungsi logout
